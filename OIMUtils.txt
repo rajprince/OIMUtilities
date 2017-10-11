@@ -1,0 +1,33 @@
+// applicationInstanceKey - AD Application Instance Key
+// attributeName - AD OU Attribute Name
+
+public String getUserAccountAttributeValue(String userLogin,long applicationInstanceKey,String attributeName){
+        String attributeValue=null;
+        List<Account> userAccounts=null;
+        
+        try {
+            String userKey=getUserKeyFromUserLogin(userLogin);
+            System.out.println("user key: "+userKey);
+            
+            if(userKey!=null && applicationInstanceKey>0){
+                List<Account> accountList=provisioningService.getUserAccountDetailsInApplicationInstance(userKey,applicationInstanceKey,true);
+                if(accountList.size()>0){
+                    Account account=accountList.get(0);
+                    if(account!=null && account.getAccountData()!=null && account.getAccountData().getData()!=null && account.getAccountData().getData().get(attributeName)!=null){
+                        System.out.println(account.getAccountData().getData());
+                        attributeValue=account.getAccountData().getData().get(attributeName).toString();
+                    }
+                }
+            }
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+            throw new IAMSException(e);
+        } catch (GenericProvisioningException e) {
+            e.printStackTrace();
+            throw new IAMSException(e);
+        }catch (ApplicationInstanceNotFoundException e) {
+            e.printStackTrace();
+            throw new IAMSException(e);
+        }
+        return attributeValue;
+    }
