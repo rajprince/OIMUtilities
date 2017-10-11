@@ -14,7 +14,6 @@
         try {
             Hashtable<String, String> envHash = new Hashtable<String, String>();
             envHash.put(Context.INITIAL_CONTEXT_FACTORY, "weblogic.jndi.WLInitialContextFactory");
-            //envHash.put(Context.PROVIDER_URL, "t3://192.168.190.116:14000");
             envHash.put(Context.SECURITY_AUTHENTICATION, "simple");
             envHash.put(Context.SECURITY_PROTOCOL, ssl);
             
