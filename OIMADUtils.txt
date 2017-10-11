@@ -16,10 +16,11 @@
             envHash.put(Context.INITIAL_CONTEXT_FACTORY, "weblogic.jndi.WLInitialContextFactory");
             //envHash.put(Context.PROVIDER_URL, "t3://192.168.190.116:14000");
             envHash.put(Context.SECURITY_AUTHENTICATION, "simple");
-            envHash.put(Context.SECURITY_PROTOCOL, IAMSConstants.SSL);
+            envHash.put(Context.SECURITY_PROTOCOL, ssl);
             
             cctx = new InitialContext(envHash);
-            Object ctx = cctx.doLookup(new CompositeName().add(IAMSConstants.IAMS_CONFIGURATION_CUSTOMADJNDI));
+            // For Example AD JNDI Provider Name: ADJNDI
+            Object ctx = cctx.doLookup(new CompositeName().add("ADJNDI"));
             
             if (ctx != null) {
                 dirContext = (DirContext)ctx;            
