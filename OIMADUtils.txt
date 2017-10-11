@@ -36,3 +36,44 @@
         
         return dirContext;
     }
+    
+    public boolean resetPassword(String userId,String encryptedPassword,DirContext adDirContext,String userRDN){
+        boolean result=false;
+        try{
+            String decPass=tcCryptoUtil.decrypt(encryptedPassword, IAMSConstants.PWD_DB_SECRETKEY);
+    
+            if(decPass!=null){
+                String quotedPassword = "\"" + decPass + "\"";
+                char unicodePwd[] = quotedPassword.toCharArray();
+                byte pwdArray[] = new byte[unicodePwd.length * 2];
+                for (int i=0; i<unicodePwd.length; i++) {
+                    pwdArray[i * 2 + 1] = (byte)(unicodePwd[i] >>> 8);
+                    pwdArray[i * 2 + 0] = (byte)(unicodePwd[i] & 0xff);
+                }
+                
+                ModificationItem[] mods = new ModificationItem[2];
+                mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("UnicodePwd", pwdArray));
+                mods[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("lockoutTime","0"));
+                System.out.println("modifying ad attributes ");
+                
+                adDirContext.modifyAttributes(userRDN, mods);
+                result=true;
+                decPass="";
+
+            }else{
+                throw new IAMSException("Invalid Password");
+            }
+        }catch(NamingException e) {
+            e.printStackTrace();
+        } catch (tcCryptoException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IAMSException(e);
+        }
+        System.out.println("ad reset password result: "+result);
+        return result;
+
+    }
+    
+    
